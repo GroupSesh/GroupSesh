@@ -3,47 +3,31 @@ var validatorPackage = require('node-mongoose-validator');
 
 var Schema = mongoose.Schema;
 
-var userSchema  = mongoose.Schema({
+var SeshSchema  = mongoose.Schema({
   createdTime: {
     type: Date,
     default: Date.now()
   },
-  profilePic: {
-    type: String
+  seshType: {
+    type: String //joints, bongs, dabs,  everything and anything
   },
-  name: {
-    type: String,
-    required: true
+  startTime: {
+    type: Date
   },
-  email: {
-    type: String,
-    unique: true,
-    required: true,
-    //  HTML5 email validation regex
-    validate: function(email) {
-      return /^[a-zA-Z0-9.!#$%&’*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)
-    }
+  endTime: {
+    type: Date
   },
-  password: {
-    type: String,
-    required:true
-  },
-  phoneNumber: {
-    type: String,
-    unique: true,
-    validate: {
-      validator: function(num) {
-        // 10 digits
-        var regexStuff = /^\d{10}$/;
-        // checks that number exists and then checks against regex
-        return (num === null || num.trim().length < 1) || regexStuff.test(num)
-      },
-      message: 'Provided phone number is invalid and/or not a US number'
+  location: {
+    longitude:{
+      type: String
+    },
+    latitude:{
+      type: String
     }
   }
 
 });
 
-var User = mongoose.model('User', userSchema);
+var Sesh = mongoose.model('Sesh', userSchema);
 
-module.exports = User
+module.exports = Sesh
