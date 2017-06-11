@@ -3,7 +3,7 @@ var validatorPackage = require('node-mongoose-validator');
 
 var Schema = mongoose.Schema;
 
-var verifySchema  = mongoose.Schema({
+var RegisterSchema  = mongoose.Schema({
   createdTime: {
     type: Date,
     default: Date.now()
@@ -14,7 +14,7 @@ var verifySchema  = mongoose.Schema({
   phoneNumber: {
     type: String
   },
-  pin:  {
+  request_id:  {
     type: String
   },
   verified: {
@@ -23,6 +23,6 @@ var verifySchema  = mongoose.Schema({
 
 });
 
-var Verify = mongoose.model('Verify', verifySchema);
+var Register = mongoose.model('Register', RegisterSchema);
 
-module.exports = Verify
+module.exports = Register

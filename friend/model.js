@@ -3,8 +3,6 @@ var validatorPackage = require('node-mongoose-validator');
 
 var Schema = mongoose.Schema;
 
-var responses = ['accepted', 'denied', 'unresponded']
-
 var FriendRequestSchema  = mongoose.Schema({
   createdTime: {
     type: Date,
@@ -17,12 +15,14 @@ var FriendRequestSchema  = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId
   }
   response: {
-    type: String
+    type: String,
+    enum : ['accepted', 'denied', 'unresponded'],
+    default : 'unresponded'
   }
 });
 
 //validations
-FriendRequestSchema.path('response').validate(validator.extend('isResponse', (arg) => responses.indexOf(arg)>=0, 'Not a correct response');
+//FriendRequestSchema.path('response').validate(validator.extend('isResponse', (arg) => responses.indexOf(arg)>=0, 'Not a correct response');
 
 var FriendRequest = mongoose.model('FriendRequest', FriendRequestSchema);
 

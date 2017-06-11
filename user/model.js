@@ -1,3 +1,5 @@
+"use strict"
+
 var mongoose = require('mongoose');
 var validatorPackage = require('node-mongoose-validator');
 
@@ -12,8 +14,15 @@ var userSchema  = mongoose.Schema({
     type: String
   },
   name: {
+    type: String
+  },
+  role: {
     type: String,
-    required: true
+    enum: ['user','dispencery', 'admin' ],
+    default: 'user'
+  },
+  token: {
+    type: String
   },
   phoneNumber: {
     type: String
@@ -23,10 +32,11 @@ var userSchema  = mongoose.Schema({
   },
   seshList: {
     type: Array
-  },
+  }
 
 
 });
+
 
 var User = mongoose.model('User', userSchema);
 
