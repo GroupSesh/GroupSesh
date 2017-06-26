@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var Register = require('./model');
-var https = require('https');
-var Verify = require('./verify');
-var validator = require('validator');
-var Nexmo = require('nexmo');
+const express = require('express'),
+      router = express.Router(),
+      Register = require('./model'),
+      https = require('https'),
+      Verify = require('./verify'),
+      validator = require('validator'),
+      Nexmo = require('nexmo');
 
 var nexmo = new Nexmo({
     apiKey: process.env.NEXMO_API,

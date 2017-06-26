@@ -1,20 +1,18 @@
 "use strict"
 //Express setup
 const express = require('express'),
-      bodyParser= require('body-parser'),
-      path = require('path'),
-      logger = require('morgan'),
-      exphbs = require('express-handlebars');
+  bodyParser= require('body-parser'),
+  //path = require('path'),
+  logger = require('morgan'),
+  exphbs = require('express-handlebars');
 
 //User authentication
 const passport = require('passport'),
-      JwtStrategy = require('passport-jwt').Strategy,
-      ExtractJwt = require('passport-jwt').ExtractJwt;
+  JwtStrategy = require('passport-jwt').Strategy,
+  ExtractJwt = require('passport-jwt').ExtractJwt;
 
-//Session Cookies
-var session = require('express-session');
-var MongoStore = require('connect-mongo');
-
+//models
+var User = require('./user/model');
 //routes
 var authRoutes = require('./auth/route');
 var friendRoutes = require('./friend/route');
@@ -66,10 +64,10 @@ passport.use(jwtLogin);
 const requireAuth = passport.authenticate('jwt', { session: false });
 
 //routing paths
- app.use(authRoutes);
+app.use(authRoutes);
  // app.use(requireAuth, friendRoutes);
  // app.use(requireAuth, seshRoutes);
- // app.use(requireAuth, userRoutes);
+app.use(requireAuth, userRoutes);
 
 //Catch 404 and forward to error handler
 // app.use(function(req, res, next){

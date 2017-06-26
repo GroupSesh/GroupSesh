@@ -1,13 +1,12 @@
 const Register = require('./model'),
-      User = require('../user/model'),
-      https = require('https'),
-      jwt = require('jsonwebtoken'),
-      Nexmo = require('nexmo');
+  User = require('../user/model'),
+  jwt = require('jsonwebtoken'),
+  Nexmo = require('nexmo');
 
 var nexmo = new Nexmo({
-    apiKey: process.env.NEXMO_API,
-    apiSecret: process.env.NEXMO_SECRET
-  });
+  apiKey: process.env.NEXMO_API,
+  apiSecret: process.env.NEXMO_SECRET
+});
 
 
 var Verify = exports
@@ -40,18 +39,18 @@ Verify.searchVerification = function(register){
 }
 
 Verify.requestPIN = function(phoneNumber){
-return new Promise(function(resolve, reject){
+  return new Promise(function(resolve, reject){
     nexmo.verify.request({number: phoneNumber, brand:'GroupSesh'},function(err, res){
       if(err) throw Error({'err' : err});
       if(res.status == '0') {
         Register.update({'phoneNumber': phoneNumber},
-                        {
-                          'phoneNumber': phoneNumber,
-                          'request_id': res.request_id,
-                          'verified': false
-                        },
-                        { 'upsert': true,
-                          'setDefaultsOnInsert': true})
+          {
+            'phoneNumber': phoneNumber,
+            'request_id': res.request_id,
+            'verified': false
+          },
+          { 'upsert': true,
+            'setDefaultsOnInsert': true})
         .then(res => {
           resolve(res)
         }).catch(err => {
@@ -80,12 +79,12 @@ Verify.nexmoVerifyPromise = function(register, pin){
 
 Verify.verifyPIN = function(phoneNumber, pin){
   return new Promise(function(resolve, reject){
-  Register.findOne({'phoneNumber': phoneNumber})
+    Register.findOne({'phoneNumber': phoneNumber})
   .then((register) => {
-      if(!register) throw new Error({'msg': 'Phone Number not found'})
-      return Verify.nexmoVerifyPromise(register, pin)
+    if(!register) throw new Error({'msg': 'Phone Number not found'})
+    return Verify.nexmoVerifyPromise(register, pin)
   }).then(res => {
-      return Register.update({'phoneNumber': phoneNumber}, {'verified': true})
+    return Register.update({'phoneNumber': phoneNumber}, {'verified': true})
   }).then(res => {
     var user = new User({
       'phoneNumber': phoneNumber
@@ -93,9 +92,11 @@ Verify.verifyPIN = function(phoneNumber, pin){
     return user.save()
   }).then(user => {
     var userInfo = Verify.setUserInfo(user);
-    resolve(Verify.generateToken(userInfo));
+    user.update({jwt: Verify.generateToken(userInfo)});
+  }).then(user => {
+    resolve(user.jwt)
   }).catch(err => {
     reject(err)
   })
- });
+  });
 }

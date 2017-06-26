@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
-var validatorPackage = require('node-mongoose-validator');
+//var validatorPackage = require('node-mongoose-validator');
 
 var Schema = mongoose.Schema;
 
-var RegisterSchema  = mongoose.Schema({
+var RegisterSchema  = new Schema({
   createdTime: {
     type: Date,
     default: Date.now()

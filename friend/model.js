@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
-var validatorPackage = require('node-mongoose-validator');
+//var validatorPackage = require('node-mongoose-validator');
 
 var Schema = mongoose.Schema;
 
-var FriendRequestSchema  = mongoose.Schema({
+var FriendRequestSchema  = new Schema({
   createdTime: {
     type: Date,
     default: Date.now()
@@ -13,7 +13,7 @@ var FriendRequestSchema  = mongoose.Schema({
   },
   receiveUser: {
     type: mongoose.Schema.Types.ObjectId
-  }
+  },
   response: {
     type: String,
     enum : ['accepted', 'denied', 'unresponded'],
