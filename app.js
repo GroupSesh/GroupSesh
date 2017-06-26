@@ -1,20 +1,29 @@
+"use strict"
 //Express setup
-var express = require('express');
-var bodyParser= require('body-parser');
-var path = require('path');
-var logger = require('morgan');
+const express = require('express'),
+  bodyParser= require('body-parser'),
+  //path = require('path'),
+  logger = require('morgan'),
+  exphbs = require('express-handlebars');
 
 //User authentication
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
+const passport = require('passport'),
+  JwtStrategy = require('passport-jwt').Strategy,
+  ExtractJwt = require('passport-jwt').ExtractJwt;
 
-//Session Cookies
-var session = require('express-session');
-var MongoStore = require('connect-mongo');
+//models
+var User = require('./user/model');
+//routes
+var authRoutes = require('./auth/route');
+var friendRoutes = require('./friend/route');
+var seshRoutes = require('./sesh/route');
+var userRoutes = require('./user/route');
 
 var connect = process.env.MONGODB_URI
-console.log(process.env.MONGODB_URI);
+
 var app = express();
+app.engine('.hbs', exphbs({ extname: '.hbs'}));
+app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -27,54 +36,52 @@ mongoose.connection.on('connected', function(){
 })
 mongoose.connection.on('error', function(){
   console.log('mongoose connection NOT successful');
-  console.log(process.env.MONGODB_URI)
 })
 mongoose.Promise = Promise;
 
-// app.use(session({
-//   secret: process.env.SECRET,
-//   cookie: {
-//     // In milliseconds, i.e., 10 days
-//     maxAge: 1000 * 60 * 60 * 24 * 10
-//   },
-//   proxy: true,
-//   resave: true,
-//   saveUninitialized: true,
-//   store: new MongoStore({mongooseConnection: mongoose.connection})
-// }));
-app.use(passport.initialize());
-app.use(passport.session());
+const jwtOptions = {
+  // Telling Passport to check authorization headers for JWT
+  jwtFromRequest: ExtractJwt.fromAuthHeader(),
+  // Telling Passport where to find the secret
+  secretOrKey: process.env.SECRET
+};
 
-passport.serializeUser(function(user, done) {
-  done(null, user._id);
-});
+const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
+  User.findById(payload._id, function(err, user) {
+    if (err) { return done(err, false); }
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
+    if (user) {
+      done(null, user);
+    } else {
+      done(null, false);
+    }
   });
 });
 
-// passport.use(new LocalStrategy({
-//   //passport with phonenumber
-// }));
+passport.use(jwtLogin);
 
-//paths
-// app.use();
+
+const requireAuth = passport.authenticate('jwt', { session: false });
+
+//routing paths
+app.use(authRoutes);
+ // app.use(requireAuth, friendRoutes);
+ // app.use(requireAuth, seshRoutes);
+app.use(requireAuth, userRoutes);
 
 //Catch 404 and forward to error handler
-app.use(function(req, res, next){
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+// app.use(function(req, res, next){
+//   var err = new Error('Not Found');
+//   err.status = 404;
+//   next(err);
+// });
 
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
+    res.json({
       message: err.message,
       error: err
     });
@@ -85,7 +92,7 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', {
+  res.json({
     message: err.message,
     error: {}
   });
