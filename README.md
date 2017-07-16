@@ -3,36 +3,33 @@
 *smoke with me*
 
 ## Overview 
-Adoe consolidates and curates all foundations and charities through a single centralized platform where all donations are made easy. Our application reinvents the process of donating by eliminating the hassle of creating multiple accounts, re-entering credit card information, and maneuvring through the vast world of charities. With Adoe, foundations don't need to waste valuable dollars and time building and marketing their own app. We take care of the app so foundations can take care of what they do best. 
-
-What GroupSesh Offers:
- * Highlighting applicable foundations related to current disasters
- * Curating charities by pass through rate
- * Single time payment information entry
- * Easy tax receipts exported on your desired taxing software or simple pdf
- * Fundraiser hosting, bringing your donors to you in a single click 
+ 
 
 # API Reference 
 
-Below are the live server specifications for accessing our "Adoe" internal API. 
+Below are the live server specifications for accessing our "GroupSesh" internal API. 
+`base_url: https://hidden-depths-97806.herokuapp.com`
+## Sesh
 
-## User
+### `POST` Create Sesh
+#### path: /sesh/create
 
-### `POST` Register User
-`url: https://polar-sands-99108.herokuapp.com/api/users/register`
-
+* If immediateStart is false; a seshLocation and startTime are required
 #### Input 
 ```javascript
 {
- "name": String, *Required
- "email": String, *Required
- "password": String, *Required
- "phoneNumber": String,
- "streetAddress": String,
- "city": String,
- "ustate": String,
- "zipCode": String,
- "country": String
+ "requestUsers": Array, *Required
+ "immediateStart": Boolean, *Required
+ "seshLocation": 
+   {
+     "latitude": String,
+     "longitude": String
+    }, 
+ "startTime": String,
+ "endTime": String,
+ "bio": String,
+ "activity": String, 
+ "seshType": String  *Required
 }
 ```
 
@@ -40,11 +37,9 @@ Below are the live server specifications for accessing our "Adoe" internal API.
 
 **Failure Responses**:
 
-* 400 - `{"success":false, "error": "Name Required"}`
-* 400 - `{"success":false, "error": "Email Required"}`
-* 400 - `{"success":false, "error": "password Required"}`
-* 400 - `{"success":false, "error": "Phone number already being used"}`
-* 400 - `{"success":false, "error": "Email already being used"}`
+* 400 - `{"success":false, "error": "request user array empty"}`
+* 400 - `{"success":false, "error": "immediateStart option required"}`
+* 400 - `{"success":false, "error": "sesh type not found"}`
 
 ### `POST` Login User
 `url: https://polar-sands-99108.herokuapp.com/api/users/login`
