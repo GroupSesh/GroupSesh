@@ -20,7 +20,13 @@ Verify.generateToken = function(user) {
 Verify.setUserInfo = function(request) {
   return {
     _id: request._id,
-    phoneNumber: request.phoneNumber
+    phoneNumber: request.profile.phoneNumber,
+    role: request.role,
+    firstName: request.profile.firstName || null,
+    lastName: request.profile.lastName || null,
+    profilePic: request.profile.profilePic || null,
+    lat: request.location.latitude || null,
+    long: request.location.longitude || null
   };
 }
 
@@ -77,8 +83,11 @@ Verify.nexmoVerifyPromise = function(register, pin){
   })
 }
 
-Verify.verifyPIN = function(phoneNumber, pin){
+Verify.verifyPIN = function(phoneNumber, pin, testUser){
   return new Promise(function(resolve, reject){
+    if(testUser){
+
+    }
     Register.findOne({'phoneNumber': phoneNumber})
   .then((register) => {
     if(!register) throw new Error({'msg': 'Phone Number not found'})
@@ -92,7 +101,7 @@ Verify.verifyPIN = function(phoneNumber, pin){
     return user.save()
   }).then(user => {
     var userInfo = Verify.setUserInfo(user);
-    user.update({jwt: Verify.generateToken(userInfo)});
+    user.update({jwt: 'JWT' + Verify.generateToken(userInfo)});
   }).then(user => {
     resolve(user.jwt)
   }).catch(err => {

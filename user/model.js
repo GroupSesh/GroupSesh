@@ -18,7 +18,7 @@ var userSchema  = new Schema({
       type: String
     },
     profilePic: {
-      type: String
+      type: Array
     },
     bio: {
       type: String,
@@ -44,6 +44,9 @@ var userSchema  = new Schema({
     },
     activities: [{
       type: String
+    }],
+    friendRequestList: [{
+      type: mongoose.Schema.Types.ObjectId
     }],
     friendList: [{
       type: mongoose.Schema.Types.ObjectId
