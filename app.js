@@ -7,9 +7,7 @@ const express = require('express'),
   exphbs = require('express-handlebars');
 
 //User authentication
-const passport = require('passport'),
-  JwtStrategy = require('passport-jwt').Strategy,
-  ExtractJwt = require('passport-jwt').ExtractJwt;
+const jwt = require('jsonwebtoken');
 
 //models
 var User = require('./user/model');
@@ -39,35 +37,16 @@ mongoose.connection.on('error', function(){
 })
 mongoose.Promise = Promise;
 
-const jwtOptions = {
-  // Telling Passport to check authorization headers for JWT
-  jwtFromRequest: ExtractJwt.fromAuthHeader(),
-  // Telling Passport where to find the secret
-  secretOrKey: process.env.SECRET
-};
-
-const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
-  User.findById(payload._id, function(err, user) {
-    if (err) { return done(err, false); }
-
-    if (user) {
-      done(null, user);
-    } else {
-      done(null, false);
-    }
-  });
+//routing paths
+app.get('/', function(req, res){
+  res.send('Hello World');
 });
 
-passport.use(jwtLogin);
-
-
-const requireAuth = passport.authenticate('jwt', { session: false });
-
-//routing paths
 app.use(authRoutes);
+// route middleware to verify a token
  // app.use(requireAuth, friendRoutes);
  // app.use(requireAuth, seshRoutes);
-app.use(requireAuth, userRoutes);
+app.use(userRoutes);
 
 //Catch 404 and forward to error handler
 // app.use(function(req, res, next){
@@ -98,8 +77,12 @@ app.use(function(err, req, res, next) {
   });
 });
 
-var port = process.env.PORT ||3000;
+var port = process.env.PORT || 3000;
 console.log('listening on port ' + port);
-app.listen(port);
+var server = app.listen(port);
+
+app.closeServer = function(){
+  server.close();
+};
 
 module.exports = app;

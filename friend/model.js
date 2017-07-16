@@ -14,6 +14,10 @@ var FriendRequestSchema  = new Schema({
   receiveUser: {
     type: mongoose.Schema.Types.ObjectId
   },
+  message: {
+    type: String,
+    max: 250
+  },
   response: {
     type: String,
     enum : ['accepted', 'denied', 'unresponded'],
